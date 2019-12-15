@@ -1,0 +1,31 @@
+{
+  "name": "globalia/stats-crawler",
+  "description": "Plugin dedicated to crawl website and fetch the share statistics on the links found",
+  "repositories": [
+    {
+      "type":"package",
+      "package": {
+        "name": "friedolinfoerder/wp-activerecord",
+        "version":"master",
+        "source": {
+          "url": "https://github.com/friedolinfoerder/wp-activerecord.git",
+          "type": "git",
+          "reference":"master"
+        }
+      }
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "friedolinfoerder/wp-activerecord": "master",
+    "pimple/pimple": "~3.0",
+    "symfony/console": "^3.2",
+    "facebook/graph-sdk" : "~5.0"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Globalia\\StatsCrawler\\": "src"
+    }
+  }
+}
