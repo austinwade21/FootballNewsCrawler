@@ -36,7 +36,7 @@ class CrawlerHTTPRequest extends \PHPCrawlerHTTPRequest
             $json_content = json_decode($pageInfo->content);
 //            if(!empty($json_content->articles)){
             parse_str(trim($pageInfo->query, "?"), $params);
-            if((int)$params["page"] < 30){
+            if((int)$params["page"] < 20){
                 $loadMoreUrl = new PHPCrawlerURLDescriptor("https://www.narcity.com/_homepage.json?page=".($params["page"] + 1), null, null, null, null, 0);
             }
             else{
@@ -45,7 +45,7 @@ class CrawlerHTTPRequest extends \PHPCrawlerHTTPRequest
         }
         elseif (preg_match('/https\:\/\/www\.cafedeclic\.com\/\?p\=[\d]+/m', $pageInfo->url)){
             parse_str(trim($pageInfo->query, "?"), $params);
-            if((int)$params["p"] < 30){
+            if((int)$params["p"] < 20){
                 $loadMoreUrl = new PHPCrawlerURLDescriptor("https://www.cafedeclic.com/?p=".($params["p"] + 1), null, null, null, null, 0);
             }
             else{

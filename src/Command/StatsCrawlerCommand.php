@@ -74,7 +74,7 @@ class StatsCrawlerCommand extends Command
                     $crawler->setCrawlingDepthLimit(1);
 
                     if($fetch_url == "https://topibuzz.me/"){
-                        $crawler->setCrawlingDepthLimit(2);
+//                        $crawler->setCrawlingDepthLimit(2);
                         $crawler->addOgTypeFilter("article");
                     }
                     elseif($fetch_url == "https://www.cafedeclic.com/"){
