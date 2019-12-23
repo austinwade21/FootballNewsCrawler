@@ -1,0 +1,14 @@
+<?php
+
+return $configs = [ //Alltrends Dev
+    'facebook_app_id'           => '1901200780148887',
+    'facebook_app_secret'       => '52d6fa62f5598bf6a662c395cdbdb2e8',
+    'facebookAdminAccessToken'  => 'EAAbBIc0lwJcBAEV5kzO2ssmQdSy2SFTgrgAkdha1mqpF9WqM7kKNWqgNJUrmDHbaz38skaDvxYHz65jl6la9SAQtGLLfXEXcMitU8s67HUnqtmUOMjsPOj0KlGg6GwOyw96qquZCLsdy8vkcoLXQ3GLKCBfUZD' //dev
+];
+/*Live*/
+/*
+return $config = [
+    'facebook_app_id'           => '1901200053482293', //Alltrends live
+    'facebook_app_secret'       => '26154888e6100504147eafa258d5760e', //live
+    'facebookAdminAccessToken'  => 'EAAbBIaHVszUBAEDUfLXU7tiErnMaxXk94EANMublgU05XEjbZA9e9yjy0jxdZACOpEpAiplZCn5Ya6E8ShNZBtC1gxGjPjZChweTJOQKEmXY6B8rQC8c0oWljZC1uwfeuJTtB3JlfgwLhPvEr5vLtFGrqLV0ioIFsZD' //live
+];*/
