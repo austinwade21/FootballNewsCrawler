@@ -7,6 +7,7 @@
     <thead>
     <tr>
         <th><?php echo __('Nom du domaine', 'stats-crawler') ?></th>
+        <th><?php echo __('Keywords', 'stats-crawler') ?></th>
         <th><?php echo __('Nombre de liens', 'stats-crawler') ?></th>
         <th><?php echo __('Actions', 'stats-crawler'); ?></th>
     </tr>
@@ -23,6 +24,9 @@
                     <span class="badge success"><?php echo __('Actif', 'stats-crawler') ?></span>
                 <?php endif; ?>
 
+            </td>
+            <td>
+                <?php echo $crawledDomain->keywords ?>
             </td>
             <td>
                 <?php echo $crawledDomain->link_count ?>

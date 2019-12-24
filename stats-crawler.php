@@ -14,6 +14,7 @@ use Pimple\Container;
 use Globalia\StatsCrawler\Helpers\View;
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
 class StatsCrawler
 {
     const PREFIX = 'stats_crawler_';
@@ -22,7 +23,8 @@ class StatsCrawler
 
     static public $social_status;
 
-    public function __construct($container) {
+    public function __construct($container)
+    {
         $this->container = $container;
         add_action('init', array($this, 'init'));
     }
@@ -36,7 +38,7 @@ class StatsCrawler
 
         $table = $wpdb->prefix . StatsCrawler::PREFIX . 'domains';
 
-        if($wpdb->get_var("show tables like '$table'") != $table) {
+        if ($wpdb->get_var("show tables like '$table'") != $table) {
             $create_table_query = "CREATE TABLE $table (
             id int(11) NOT NULL AUTO_INCREMENT,
             name VARCHAR(255),  
@@ -52,7 +54,7 @@ class StatsCrawler
 
         $table = $wpdb->prefix . StatsCrawler::PREFIX . 'stats';
 
-        if($wpdb->get_var("show tables like '$table'") != $table) {
+        if ($wpdb->get_var("show tables like '$table'") != $table) {
             $create_table_query = "CREATE TABLE $table (
             id int(11) NOT NULL AUTO_INCREMENT,
             domain_id int(11) NOT NULL,
@@ -68,6 +70,23 @@ class StatsCrawler
             dateUpdated datetime NOT NULL,
             uid char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
             PRIMARY KEY  (id)
+            ) $charset_collate;";
+
+            dbDelta($create_table_query);
+        }
+
+        $table = $wpdb->prefix . StatsCrawler::PREFIX . 'keywords';
+
+        if ($wpdb->get_var("show tables like '$table'") != $table) {
+            $create_table_query = "CREATE TABLE $table (
+                id INT(11) NOT NULL AUTO_INCREMENT,
+                keyword VARCHAR(255) NOT NULL,
+                domain_id INT(11) NOT NULL,
+                description VARCHAR(255) NULL DEFAULT NULL,
+                created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                INDEX domain_id (domain_id),
+                INDEX created_time (created_time)
             ) $charset_collate;";
 
             dbDelta($create_table_query);
@@ -106,9 +125,9 @@ class StatsCrawler
         if (strpos($hook, 'stats_crawler') !== false) {
             wp_enqueue_script('foundation-js', 'https://cdn.jsdelivr.net/foundation/6.2.4/foundation.min.js');
             wp_enqueue_script('foundation-tabs', 'https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.4/plugins/foundation.tabs.js');
-            wp_enqueue_script('app', plugins_url('assets/js/app.js', __FILE__ ), array('jquery', 'foundation-js', 'foundation-tabs'));
+            wp_enqueue_script('app', plugins_url('assets/js/app.js', __FILE__), array('jquery', 'foundation-js', 'foundation-tabs'));
             wp_enqueue_style('foundation-css', 'https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.4/foundation.css');
-            wp_enqueue_style('styles-css', plugins_url('assets/css/style.css', __FILE__ ));
+            wp_enqueue_style('styles-css', plugins_url('assets/css/style.css', __FILE__));
         }
     }
 
@@ -132,7 +151,7 @@ class StatsCrawler
 
     protected function loadSubpages($parent_menu_slug, array $subPages)
     {
-        foreach ($subPages as  $subpage) {
+        foreach ($subPages as $subpage) {
             add_submenu_page($parent_menu_slug, $subpage['page_title'], $subpage['menu_title'], $subpage['capability'], self::PREFIX . $subpage['menu_slug'], $subpage['function']);
         }
     }
@@ -140,9 +159,10 @@ class StatsCrawler
     protected function addPostActions()
     {
 
-        add_action( 'admin_post_stats_crawler_add_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_domain');
-        add_action( 'admin_post_stats_crawler_disable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_disable_domain');
-        add_action( 'admin_post_stats_crawler_enable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_enable_domain');
+        add_action('admin_post_stats_crawler_add_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_domain');
+        add_action('admin_post_stats_crawler_disable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_disable_domain');
+        add_action('admin_post_stats_crawler_enable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_enable_domain');
+        add_action('admin_post_stats_crawler_add_keyword', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_keyword');
     }
 
     public function addQueryVars($vars)

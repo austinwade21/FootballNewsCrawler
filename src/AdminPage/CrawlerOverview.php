@@ -39,7 +39,8 @@ class CrawlerOverview extends AdminPage {
 
         $query = "SELECT * 
                     FROM {$wpdb->prefix}stats_crawler_domains as domains
-                  LEFT JOIN (SELECT COUNT(DISTINCT url) as link_count, domain_id FROM {$wpdb->prefix}stats_crawler_stats GROUP BY domain_id) as stats on domains.id = stats.domain_id";
+                  LEFT JOIN (SELECT COUNT(DISTINCT url) as link_count, domain_id FROM {$wpdb->prefix}stats_crawler_stats GROUP BY domain_id) as stats on domains.id = stats.domain_id
+                  LEFT JOIN (SELECT domain_id, GROUP_CONCAT(DISTINCT keyword SEPARATOR ', ') as keywords FROM {$wpdb->prefix}stats_crawler_keywords GROUP BY domain_id) as keywords on domains.id = keywords.domain_id;";
         $result = $wpdb->get_results(
             $query
         );
@@ -55,6 +56,16 @@ class CrawlerOverview extends AdminPage {
     {
         $variables['content'] = 'domain_create';
 
+        $this->render('layout', $variables);
+    }
+
+    public function add_keyword(){
+        global $wpdb;
+        $query = "SELECT * FROM {$wpdb->prefix}stats_crawler_domains";
+        $result = $wpdb->get_results($query);
+
+        $variables['content'] = 'add_keyword';
+        $variables['domains'] = $result;
         $this->render('layout', $variables);
     }
 
@@ -126,7 +137,30 @@ class CrawlerOverview extends AdminPage {
             ]));
         }
 
-        wp_redirect('/wp-admin/admin.php?page=stats_crawler_overview&id=' . $wpdb->insert_id);
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview&id=' . $wpdb->insert_id);
+
+    }
+
+    public static function post_add_keyword()
+    {
+        global $wpdb;
+        $domain_id = $_POST['domain_id'];
+        $keyword = $_POST['keyword'];
+
+        $timezone = new \DateTimeZone('America/Montreal');
+        $now = new \DateTime('now', $timezone);
+
+        $query = "INSERT INTO {$wpdb->prefix}stats_crawler_keywords
+              (domain_id, keyword, created_time)
+              VALUES (%s, %s, %s)";
+
+        $wpdb->query($wpdb->prepare($query, [
+            $domain_id,
+            $keyword,
+            $now->format('Y-m-d H:i:s')
+        ]));
+
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview&id=' . $domain_id);
 
     }
 
@@ -143,7 +177,7 @@ class CrawlerOverview extends AdminPage {
             $domainId
         ]));
 
-        wp_redirect('/wp-admin/admin.php?page=stats_crawler_overview');
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview');
     }
 
     public static function post_enable_domain()
@@ -159,6 +193,6 @@ class CrawlerOverview extends AdminPage {
             $domainId
         ]));
 
-        wp_redirect('/wp-admin/admin.php?page=stats_crawler_overview');
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview');
     }
 }

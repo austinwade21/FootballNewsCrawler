@@ -15,7 +15,15 @@ return array(
                 'capability'    => 'administrator',
                 'menu_slug'     => 'domain_create',
                 'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'create']
+            ],
+            'add_keyword' => [
+                'page_title'    => __('Add Keyword', 'stats-crawler'),
+                'menu_title'    => __('Add Keyword', 'stats-crawler'),
+                'capability'    => 'administrator',
+                'menu_slug'     => 'add_keyword',
+                'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'add_keyword']
             ]
+
         )
     ),
 );

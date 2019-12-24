@@ -58,9 +58,11 @@ class StatsCrawlerCommand extends Command
         $domains = $this->getDomains();
         foreach ($domains as $domain) {
             $current_fetch_domain = $domain;
+            $keywords = $this->getKeywords($domain->id);
             foreach ($this->languages as $language) {
                 $current_fetch_lang = $language;
                 $fetch_url = $domain->url_logic;
+
                 $fetch_url = str_replace('[lang]', $language, $fetch_url);
 
                 $output->writeln("---- Crawling " . $fetch_url . " ----");
@@ -68,7 +70,11 @@ class StatsCrawlerCommand extends Command
                 try {
 
                     $crawler = new Crawler();
-                    
+
+                    if(!empty($keywords)){
+                        $crawler->setKeywords($keywords);
+                    }
+
                     $crawler->setStreamTimeout(15);
 
                     $crawler->setURL($fetch_url);
@@ -136,6 +142,18 @@ class StatsCrawlerCommand extends Command
         $query = "
                   SELECT * FROM {$wpdb->prefix}stats_crawler_domains
                   WHERE obsolete = 0";
+        $result = $wpdb->get_results(
+            $query
+        );
+        return $result;
+    }
+
+    protected function getKeywords($domain_id)
+    {
+        global $wpdb;
+        $query = "
+                  SELECT * FROM {$wpdb->prefix}stats_crawler_keywords
+                  WHERE domain_id = $domain_id";
         $result = $wpdb->get_results(
             $query
         );

@@ -36,6 +36,8 @@ class Crawler extends \PHPCrawler
         "log-in"
     ];
 
+    private $_keywords = null;
+
     private $_domDocument = false;
     private $_domMetaTags = false;
     private $_url = false;
@@ -88,6 +90,19 @@ class Crawler extends \PHPCrawler
      */
     private function isDocumentRelevant(PHPCrawlerDocumentInfo $documentInfo)
     {
+        if($documentInfo->content_type != "text/html"){
+            return false;
+        }
+
+        if(!empty($this->_keywords)){
+            foreach ($this->_keywords as $keyword){
+                if(strpos(strip_tags($documentInfo->content), $keyword) !== false){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         if(!empty($this->ogtype_filter)){
             if(in_array($documentInfo->meta_attributes["og:type"], $this->ogtype_filter)){
                 return true;
@@ -96,6 +111,7 @@ class Crawler extends \PHPCrawler
                 return false;
             }
         }
+
         // We've received something and the url is not the homepage
         if ($documentInfo->received && $documentInfo->referer_url) {
             // Apply custom filters
@@ -323,6 +339,14 @@ class Crawler extends \PHPCrawler
         return set_post_thumbnail($post_id, $attach_id);
     }
 
+    private function getTitle($htmlString){
+        $re = '/\<title\>(.*?)\<\/title\>/m';
+        if(preg_match($re, $htmlString, $matches, PREG_SET_ORDER, 0)){
+            return $matches[1];
+        }
+        return "";
+    }
+
     private function dowloadFile($url)
     {
         $upload_dir = wp_upload_dir();
@@ -389,5 +413,12 @@ class Crawler extends \PHPCrawler
 
     }
 
+    public function setKeywords($keywords){
+        if(!empty($keywords)){
+            $this->_keywords = array_map(function ($keyword){
+                return $keyword->keyword;
+            }, $keywords);
+        }
+    }
 
 }
