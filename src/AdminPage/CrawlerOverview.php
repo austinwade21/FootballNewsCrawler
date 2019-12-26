@@ -69,6 +69,16 @@ class CrawlerOverview extends AdminPage {
         $this->render('layout', $variables);
     }
 
+    public function link_tracking(){
+        global $wpdb;
+        $query = "SELECT * FROM {$wpdb->prefix}stats_crawler_link_tracking AS lt LEFT JOIN {$wpdb->prefix}stats_crawler_domains d ON lt.domain_id = d.id";
+        $result = $wpdb->get_results($query);
+
+        $variables['content'] = 'link_tracking';
+        $variables['link_tracking'] = $result;
+        $this->render('layout', $variables);
+    }
+
     public static function post_add_domain()
     {
         global $wpdb;
@@ -162,6 +172,33 @@ class CrawlerOverview extends AdminPage {
 
         wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview&id=' . $domain_id);
 
+    }
+
+    public static function ajax_add_link_click_count(){
+        global $wpdb;
+        $domain_id = $_REQUEST['data_id'];
+        $timezone = new \DateTimeZone('America/Montreal');
+        $now = new \DateTime('now', $timezone);
+
+        $query = "UPDATE {$wpdb->prefix}stats_crawler_link_tracking
+              SET click_count=click_count+1, last_clicked_time=%s
+              WHERE domain_id=%s";
+
+        $count = $wpdb->query($wpdb->prepare($query, [
+            $now->format('Y-m-d H:i:s'),
+            $domain_id,
+        ]));
+        if(!$count){
+            $query = "INSERT INTO {$wpdb->prefix}stats_crawler_link_tracking
+              (domain_id, click_count, last_clicked_time)
+              VALUES (%s, %s, %s)";
+
+            $wpdb->query($wpdb->prepare($query, [
+                $domain_id,
+                1,
+                $now->format('Y-m-d H:i:s')
+            ]));
+        }
     }
 
     public static function post_disable_domain()

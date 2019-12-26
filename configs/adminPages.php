@@ -22,6 +22,13 @@ return array(
                 'capability'    => 'administrator',
                 'menu_slug'     => 'add_keyword',
                 'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'add_keyword']
+            ],
+            'link_tracking' => [
+                'page_title'    => __('Link Click Tracking', 'stats-crawler'),
+                'menu_title'    => __('Link Click Tracking', 'stats-crawler'),
+                'capability'    => 'administrator',
+                'menu_slug'     => 'link_tracking',
+                'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'link_tracking']
             ]
 
         )

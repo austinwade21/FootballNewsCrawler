@@ -92,6 +92,22 @@ class StatsCrawler
             dbDelta($create_table_query);
         }
 
+        $table = $wpdb->prefix . StatsCrawler::PREFIX . 'link_tracking';
+
+        if ($wpdb->get_var("show tables like '$table'") != $table) {
+            $create_table_query = "CREATE TABLE $table (
+                id INT(11) NOT NULL AUTO_INCREMENT,
+                domain_id INT(11) NOT NULL,
+                click_count INT(11) NOT NULL DEFAULT 0,
+                last_clicked_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                INDEX domain_id (domain_id),
+                INDEX last_clicked_time (last_clicked_time)
+            ) $charset_collate;";
+
+            dbDelta($create_table_query);
+        }
+
         add_option('stats_crawler_version', $stats_crawler_version);
     }
 
@@ -163,6 +179,9 @@ class StatsCrawler
         add_action('admin_post_stats_crawler_disable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_disable_domain');
         add_action('admin_post_stats_crawler_enable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_enable_domain');
         add_action('admin_post_stats_crawler_add_keyword', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_keyword');
+
+        add_action('wp_ajax_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');
+        add_action('wp_ajax_nopriv_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');
     }
 
     public function addQueryVars($vars)

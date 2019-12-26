@@ -95,9 +95,20 @@ class Crawler extends \PHPCrawler
         }
 
         if(!empty($this->_keywords)){
+            $this->_domDocument = new DOMDocument();
+            libxml_use_internal_errors(true);
+            $this->_domDocument->loadHTML($documentInfo->content);
+            //$this->getFirstCharacters();
+
+            $title = $this->getMetaTagValue("og:title");
+            $description = $this->getFirstCharacters(999999);
+
             foreach ($this->_keywords as $keyword){
-                if(strpos(strip_tags($documentInfo->content), $keyword) !== false){
-                    return true;
+                if(strpos(strip_tags($title), $keyword) !== false){
+                    return $this->checkLinkCode($documentInfo);
+                }
+                if(strpos(strip_tags($description), $keyword) !== false){
+                    return $this->checkLinkCode($documentInfo);
                 }
             }
             return false;
@@ -105,13 +116,17 @@ class Crawler extends \PHPCrawler
 
         if(!empty($this->ogtype_filter)){
             if(in_array($documentInfo->meta_attributes["og:type"], $this->ogtype_filter)){
-                return true;
+                return $this->checkLinkCode($documentInfo);
             }
             else{
                 return false;
             }
         }
 
+        return $this->checkLinkCode($documentInfo);
+    }
+
+    private function checkLinkCode(PHPCrawlerDocumentInfo $documentInfo){
         // We've received something and the url is not the homepage
         if ($documentInfo->received && $documentInfo->referer_url) {
             // Apply custom filters
