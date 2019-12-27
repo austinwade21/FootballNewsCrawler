@@ -59,6 +59,16 @@ class CrawlerOverview extends AdminPage {
         $this->render('layout', $variables);
     }
 
+    public function list_keywords(){
+        global $wpdb;
+        $query = "SELECT kw.id, kw.keyword, d.name FROM {$wpdb->prefix}stats_crawler_keywords AS kw LEFT JOIN {$wpdb->prefix}stats_crawler_domains d ON kw.domain_id = d.id";
+        $result = $wpdb->get_results($query);
+
+        $variables['content'] = 'list_keywords';
+        $variables['keywords'] = $result;
+        $this->render('layout', $variables);
+    }
+
     public function add_keyword(){
         global $wpdb;
         $query = "SELECT * FROM {$wpdb->prefix}stats_crawler_domains";
@@ -171,6 +181,22 @@ class CrawlerOverview extends AdminPage {
         ]));
 
         wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_overview&id=' . $domain_id);
+
+    }
+
+    public static function post_remove_keyword()
+    {
+        global $wpdb;
+        $keyword_id = $_POST['keyword_id'];
+
+        $query = "DELETE FROM {$wpdb->prefix}stats_crawler_keywords
+              WHERE id=%s";
+
+        $wpdb->query($wpdb->prepare($query, [
+            $keyword_id,
+        ]));
+
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_list_keywords');
 
     }
 

@@ -179,6 +179,7 @@ class StatsCrawler
         add_action('admin_post_stats_crawler_disable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_disable_domain');
         add_action('admin_post_stats_crawler_enable_domain', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_enable_domain');
         add_action('admin_post_stats_crawler_add_keyword', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_keyword');
+        add_action('admin_post_stats_crawler_remove_keyword', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_remove_keyword');
 
         add_action('wp_ajax_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');
         add_action('wp_ajax_nopriv_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');

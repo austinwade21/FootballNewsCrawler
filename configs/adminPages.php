@@ -16,6 +16,13 @@ return array(
                 'menu_slug'     => 'domain_create',
                 'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'create']
             ],
+            'list_keywords' => [
+                'page_title'    => __('Filtering Keywords', 'stats-crawler'),
+                'menu_title'    => __('Filtering Keywords', 'stats-crawler'),
+                'capability'    => 'administrator',
+                'menu_slug'     => 'list_keywords',
+                'function'      => [new \Globalia\StatsCrawler\AdminPage\CrawlerOverview($this->container), 'list_keywords']
+            ],
             'add_keyword' => [
                 'page_title'    => __('Add Keyword', 'stats-crawler'),
                 'menu_title'    => __('Add Keyword', 'stats-crawler'),

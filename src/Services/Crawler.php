@@ -101,7 +101,7 @@ class Crawler extends \PHPCrawler
             //$this->getFirstCharacters();
 
             $title = $this->getMetaTagValue("og:title");
-            $description = $this->getFirstCharacters(999999);
+            $description = $this->getFirstCharacters(300);
 
             foreach ($this->_keywords as $keyword){
                 if(strpos(strip_tags($title), $keyword) !== false){
@@ -269,7 +269,7 @@ class Crawler extends \PHPCrawler
      */
     private function getMetaTagValue($metaKey)
     {
-        $metaTags = $this->retrieveDomMetaTags();
+        $metaTags = $this->retrieveDomMetaTags(true);
         if (! isset($metaTags[strtolower($metaKey)]) || empty($metaTags[strtolower($metaKey)])) {
             return false;
         } else {
