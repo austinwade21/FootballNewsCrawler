@@ -80,12 +80,68 @@ class CrawlerOverview extends AdminPage {
     }
 
     public function link_tracking(){
+        $day_id = $_REQUEST['day_id'];
+
         global $wpdb;
         $query = "SELECT * FROM {$wpdb->prefix}stats_crawler_link_tracking AS lt LEFT JOIN {$wpdb->prefix}stats_crawler_domains d ON lt.domain_id = d.id";
         $result = $wpdb->get_results($query);
 
         $variables['content'] = 'link_tracking';
-        $variables['link_tracking'] = $result;
+//        $variables['link_tracking'] = $result;
+
+        //for test
+        $id_array = array(-2, 1, 0, 7, 30);
+        if(!in_array(intval($day_id), $id_array)){
+            $day_id = -2;
+        }
+
+        $temp_array = array();
+        if($day_id == null || $day_id == -2){
+            foreach ($result as $domain){
+                $domain_id = $domain->domain_id;
+                $click_count = intval($domain->click_count);
+                $is_existing = false;
+                foreach ($temp_array as $k => $temp){
+                    if($domain_id == $temp['domain_id']){
+                        $temp_array[$k]['click_count'] += $click_count;
+                        $is_existing = true;
+                    }
+                }
+                if(!$is_existing){
+                    array_push($temp_array, array('domain_id'=> $domain_id,'name'=> $domain->name,'click_count'=> $click_count));
+                }
+            }
+        }
+        else{
+            $timezone = new \DateTimeZone('America/Montreal');
+            $now = new \DateTime('now', $timezone);
+            $now_0 = new \DateTime('now', $timezone);
+            $from_date = $now_0->sub(\DateInterval::createFromDateString(''.$day_id.' days'));
+
+            $now = $now->format('Y-m-d')." 00:00:00";
+            $from_date = $from_date->format('Y-m-d')." 00:00:00";
+
+            foreach ($result as $domain){
+                $domain_id = $domain->domain_id;
+                $click_count = intval($domain->click_count);
+                $last_clicked_time = $domain->last_clicked_time;
+                if($from_date <= $last_clicked_time && $now >= $last_clicked_time){
+                    $is_existing = false;
+                    foreach ($temp_array as $k => $temp){
+                        if($domain_id == $temp['domain_id']){
+                            $temp_array[$k]['click_count'] += $click_count;
+                            $is_existing = true;
+                        }
+                    }
+                    if(!$is_existing){
+                        array_push($temp_array, array('domain_id'=> $domain_id,'name'=> $domain->name,'click_count'=> $click_count));
+                    }
+                }
+            }
+        }
+        $variables['link_tracking'] = $temp_array;
+        $variables['filter_select_index'] = $day_id;
+
         $this->render('layout', $variables);
     }
 
@@ -200,6 +256,11 @@ class CrawlerOverview extends AdminPage {
 
     }
 
+    public static function post_add_count_filter_selection(){
+        $day_id = $_REQUEST['day_id'];
+        wp_redirect(site_url().'/wp-admin/admin.php?page=stats_crawler_link_tracking&day_id='.$day_id);
+    }
+
     public static function ajax_add_link_click_count(){
         global $wpdb;
         $domain_id = $_REQUEST['data_id'];
@@ -207,11 +268,11 @@ class CrawlerOverview extends AdminPage {
         $now = new \DateTime('now', $timezone);
 
         $query = "UPDATE {$wpdb->prefix}stats_crawler_link_tracking
-              SET click_count=click_count+1, last_clicked_time=%s
-              WHERE domain_id=%s";
+              SET click_count=click_count+1
+              WHERE last_clicked_time=%s AND domain_id=%s";
 
         $count = $wpdb->query($wpdb->prepare($query, [
-            $now->format('Y-m-d H:i:s'),
+            $now->format('Y-m-d'),
             $domain_id,
         ]));
         if(!$count){
@@ -222,7 +283,7 @@ class CrawlerOverview extends AdminPage {
             $wpdb->query($wpdb->prepare($query, [
                 $domain_id,
                 1,
-                $now->format('Y-m-d H:i:s')
+                $now->format('Y-m-d')
             ]));
         }
     }

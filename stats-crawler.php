@@ -183,6 +183,10 @@ class StatsCrawler
 
         add_action('wp_ajax_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');
         add_action('wp_ajax_nopriv_add_link_click_count', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_link_click_count');
+
+        // action when changing filter selection by days
+        add_action('admin_post_add_count_filter_selection', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::post_add_count_filter_selection');
+//        add_action('wp_ajax_nopriv_add_count_filter_selection', '\Globalia\StatsCrawler\AdminPage\CrawlerOverview::ajax_add_count_filter_selection');
     }
 
     public function addQueryVars($vars)
